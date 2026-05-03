@@ -17,3 +17,6 @@ pgdata
 
 # Other
 artworks
+.idea
+.vscode
+staticfiles
