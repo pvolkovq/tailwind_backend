@@ -1,4 +1,4 @@
-# tailwind-backend
+# tailwind_backend
 
 ## Описание
 
