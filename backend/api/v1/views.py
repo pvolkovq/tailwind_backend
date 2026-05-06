@@ -9,9 +9,9 @@ class PortfolioModelViewSet(viewsets.ModelViewSet):
     serializer_class = PortfolioSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ['is_commissioning_open']
-    search_fields = ['portfolio__user__nickname']
+    search_fields = ['user__username']
 
-    queryset = Portfolio.objects.all()
+    queryset = Portfolio.objects.filter(user__is_superuser=False)
 
 class ArtworkModelViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)

@@ -42,3 +42,9 @@ class PortfolioAPITestCase(APITestCase):
         response = self.client.get(url, {'is_commissioning_open': True})
         print(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_search_portfolio_by_username(self):
+        url = reverse('portfolio-list')
+        response = self.client.get(url, {'search': 'testuser'})
+        print(response.content)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

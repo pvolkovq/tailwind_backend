@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'debug_toolbar',
+    'social_django',
     'tailwind',
     'users',
     'storages',
@@ -149,10 +150,8 @@ AWS_S3_REGION_NAME = "ru-central1"
 AWS_QUERYSTRING_AUTH = False
 AWS_S3_FILE_OVERWRITE = False
 
-# Публичный URL для медиафайлов
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.storage.yandexcloud.net"
 
-# Django 4.2+
 STORAGES = {
     "default": {
         "BACKEND": "config.storage.MediaStorage",
@@ -164,3 +163,16 @@ STORAGES = {
 
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 MEDIA_ROOT = ""
+
+# Social Auth settings
+# https://python-social-auth.readthedocs.io/en/latest/configuration/django.html
+# https://console.cloud.google.com/apis/
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',  # Keep for username/password login
+)
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
