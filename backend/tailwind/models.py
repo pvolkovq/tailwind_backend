@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from config.storage import upload_to
 from utils.created_updated import CreatedUpdatedMixin
 from django.core.exceptions import ValidationError
 
@@ -10,7 +11,15 @@ class Portfolio(CreatedUpdatedMixin, models.Model):
     """Модель, представляющая портфолио с работами пользователя"""
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=False, null=False)
     is_commissioning_open = models.BooleanField(default=False, blank=False, null=False)
-    information = models.TextField(max_length=3000, blank=False, null=False)
+    description = models.TextField(max_length=3000, blank=False, null=False)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user"],
+                name="unique_user_portfolio"
+            )
+        ]
     
     def __str__(self):
         return f"id: {self.id} | user: {self.user.get_full_name()}"
@@ -18,8 +27,7 @@ class Portfolio(CreatedUpdatedMixin, models.Model):
 class Artwork(CreatedUpdatedMixin, models.Model):
     """Модель, представляющая работу в портфолио"""
     title = models.CharField(max_length=255, blank=False, null=False, help_text="Your artwork title")
-    image = models.ImageField(db_comment="User artwork", upload_to="artworks")
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    image = models.ImageField(db_comment="User artwork", upload_to=upload_to)
     portfolio = models.ForeignKey(Portfolio, on_delete=models.DO_NOTHING, related_name="artworks")
     is_hidden = models.BooleanField(default=False)
     is_subscription_needed = models.BooleanField(default=False)

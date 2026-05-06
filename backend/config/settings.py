@@ -20,6 +20,11 @@ DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0", "localhost"]
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+    "localhost",
+]
+
 
 # Application definition
 
@@ -31,10 +36,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
     'debug_toolbar',
     'tailwind',
+    'users',
     'storages',
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -117,12 +126,41 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ]
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
 }
+# --- Yandex Object Storage ---
+AWS_ACCESS_KEY_ID = os.getenv("YC_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("YC_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = os.getenv("YC_BUCKET_NAME")
+AWS_S3_ENDPOINT_URL = "https://storage.yandexcloud.net"
+AWS_S3_REGION_NAME = "ru-central1"
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_FILE_OVERWRITE = False
+
+# Публичный URL для медиафайлов
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.storage.yandexcloud.net"
+
+# Django 4.2+
+STORAGES = {
+    "default": {
+        "BACKEND": "config.storage.MediaStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
+MEDIA_ROOT = ""
