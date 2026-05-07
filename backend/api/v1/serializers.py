@@ -2,9 +2,18 @@ from rest_framework import serializers
 from tailwind.models import Portfolio, Artwork
 
 class PortfolioSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField()
+    
+    def get_username(self, obj):
+        return obj.user.username
+    
     class Meta:
         model = Portfolio
-        fields = "__all__"
+        fields = (
+            'username',
+            'is_commissioning_open',
+            'description',
+        )
 
 class ArtworkSerializer(serializers.ModelSerializer):
     class Meta:

@@ -6,6 +6,7 @@ from tailwind.models import Portfolio, User
 class PortfolioAPITestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="testpassword")
+        # self.client.login(username=self.user.username, password="testpassword")
         self.portfolio = Portfolio.objects.create(user=self.user, description="Test info")
         for i in range(5):
             user = User.objects.create_user(username=f"testuser_{i}", password="testpassword")
@@ -48,3 +49,46 @@ class PortfolioAPITestCase(APITestCase):
         response = self.client.get(url, {'search': 'testuser'})
         print(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_portfolio_for_authenticated_user(self):
+        self.client.login(username="testuser", password="testpassword")
+        url = reverse('portfolio-detail', args=[self.portfolio.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    def test_update_portfolio_not_from_creator(self):
+        other_user = User.objects.create_user(username="otheruser", password="testpassword")
+        self.client.login(username=other_user.username, password="testpassword")
+        url = reverse('portfolio-detail', args=[self.portfolio.id])
+        data = {
+            "user": self.user.id,
+            "description": "change test",
+            "is_commissioning_open": False
+        }
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_portfolio_list_allow_any(self):
+        url = reverse('portfolio-view-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+    
+    def test_portfolio_create_allow_any(self):
+        url = reverse('portfolio-view-list')
+        data = {
+            "user": 3,
+            "description": "not auth user",
+            "is_commissioning_open": False
+        }
+        response = self.client.post(url, )
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_portfolio_update_allow_any(self):
+        url = reverse('portfolio-view-detail', args=[self.portfolio.id])
+        data = {
+            "user": 3,
+            "description": "not auth user",
+            "is_commissioning_open": False
+        }
+        response = self.client.put(url, )
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

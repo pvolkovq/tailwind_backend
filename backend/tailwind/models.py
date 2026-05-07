@@ -30,15 +30,17 @@ class Artwork(CreatedUpdatedMixin, models.Model):
     image = models.ImageField(db_comment="User artwork", upload_to=upload_to)
     portfolio = models.ForeignKey(Portfolio, on_delete=models.DO_NOTHING, related_name="artworks")
     is_hidden = models.BooleanField(default=False)
-    is_subscription_needed = models.BooleanField(default=False)
+    is_paid = models.BooleanField(default=False)
 
     def __str__(self):
         return f"id: {self.id} | title: {self.title} | portfolio_id: {self.portfolio.id}"
 
-class Subscriber(models.Model):
+class Subscriber(CreatedUpdatedMixin, models.Model):
     """Модель, представляющая подписчику юзера на портфолио"""
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     portfolio = models.ForeignKey(Portfolio, on_delete=models.DO_NOTHING, related_name="subscribers")
+    is_paid = models.BooleanField(default=False)
+    
 
     def clean(self):
         if self.user_id == self.portfolio.user_id:
