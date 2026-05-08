@@ -11,6 +11,7 @@ class Portfolio(CreatedUpdatedMixin, models.Model):
     """Модель, представляющая портфолио с работами пользователя"""
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, blank=False, null=False)
     is_commissioning_open = models.BooleanField(default=False, blank=False, null=False)
+    is_public = models.BooleanField(default=True, blank=False, null=False)
     description = models.TextField(max_length=3000, blank=False, null=False)
     
     class Meta:
@@ -22,14 +23,14 @@ class Portfolio(CreatedUpdatedMixin, models.Model):
         ]
     
     def __str__(self):
-        return f"id: {self.id} | user: {self.user.get_full_name()}"
+        return f"id: {self.id} | user: {self.user.username} | is_public: {self.is_public}"
 
 class Artwork(CreatedUpdatedMixin, models.Model):
     """Модель, представляющая работу в портфолио"""
     title = models.CharField(max_length=255, blank=False, null=False, help_text="Your artwork title")
     image = models.ImageField(db_comment="User artwork", upload_to=upload_to)
     portfolio = models.ForeignKey(Portfolio, on_delete=models.DO_NOTHING, related_name="artworks")
-    is_hidden = models.BooleanField(default=False)
+    is_public = models.BooleanField(default=True, blank=False, null=False)
     is_paid = models.BooleanField(default=False)
 
     def __str__(self):

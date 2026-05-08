@@ -3,7 +3,7 @@ from rest_framework import mixins, viewsets, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from api.v1.permissions import IsPortfolioOwner
 from tailwind.models import Portfolio, Artwork
-from api.v1.serializers import PortfolioSerializer, ArtworkSerializer
+from api.v1.serializers import PortfolioSerializer, ArtworkSerializer, PublicPortfolioArtworkSerializer
 
 class PortfolioModelViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsPortfolioOwner)
@@ -14,14 +14,24 @@ class PortfolioModelViewSet(viewsets.ModelViewSet):
 
     queryset = Portfolio.objects.all()
 
-class PortfolioReadOnlyApiView(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class PortfolioPublicApiView(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny,)
     serializer_class = PortfolioSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ['is_commissioning_open']
     search_fields = ['user__username']
 
-    queryset = Portfolio.objects.all()
+    queryset = Portfolio.objects.filter(is_public=True)
+
+
+class PublicPortfolioArtwork(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+    permission_classes = (AllowAny,)
+    serializer_class = PublicPortfolioArtworkSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filterset_fields = ['is_commissioning_open']
+    search_fields = ['user__username']
+    
+    queryset = Portfolio.objects.filter(is_public=True)
 
 
 class ArtworkModelViewSet(viewsets.ModelViewSet):

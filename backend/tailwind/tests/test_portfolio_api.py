@@ -69,26 +69,26 @@ class PortfolioAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_portfolio_list_allow_any(self):
-        url = reverse('portfolio-view-list')
+        url = reverse('public-portfolio-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
     
     def test_portfolio_create_allow_any(self):
-        url = reverse('portfolio-view-list')
+        url = reverse('public-portfolio-list')
         data = {
             "user": 3,
             "description": "not auth user",
             "is_commissioning_open": False
         }
-        response = self.client.post(url, )
+        response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_portfolio_update_allow_any(self):
-        url = reverse('portfolio-view-detail', args=[self.portfolio.id])
+        url = reverse('public-portfolio-detail', args=[self.portfolio.id])
         data = {
             "user": 3,
             "description": "not auth user",
             "is_commissioning_open": False
         }
-        response = self.client.put(url, )
+        response = self.client.put(url, data)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
