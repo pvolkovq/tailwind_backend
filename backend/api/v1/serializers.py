@@ -16,6 +16,11 @@ class PortfolioSerializer(serializers.ModelSerializer):
         )
 
 class ArtworkSerializer(serializers.ModelSerializer):
+    likes = serializers.SerializerMethodField()
+
+    def get_likes(self, obj):
+        return obj.likes.count()
+    
     class Meta:
         model = Artwork
         fields = "__all__"
